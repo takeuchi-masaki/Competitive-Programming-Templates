@@ -2,11 +2,14 @@
 using namespace std;
 typedef long long ll;
 
-struct BIT { // from nyaan's library
+/*
+from nyaan's library
+https://nyaannyaan.github.io/library/data-structure/binary-indexed-tree.hpp
+*/
+struct BIT {
     int N;
     vector<ll> data;
     BIT(int size) : N(size + 2), data(size + 3) {}
-
     /* sum [0, i] */
     ll sum(int i) const {
         if (i < 0) return 0;
@@ -14,15 +17,12 @@ struct BIT { // from nyaan's library
         for (++i; i > 0; i -= i & -i) ret += data[i];
         return ret;
     }
-
     /* sum [l, r] */
     ll sum(int l, int r) { return sum(r) - sum(l - 1); }
-
     /* add x to idx i */
     void add(int i, ll x) {
         for (++i; i < N; i += i & -i) data[i] += x;
     }
-
     /* [OPTIONAL] minimize i s.t. sum(i) >= w */
     int lower_bound(ll w) {
         if (w <= 0) return 0;
@@ -36,6 +36,7 @@ struct BIT { // from nyaan's library
         return i; // i >= N <=> total sum < w
     }
 };
+
 struct RangeAddRangeSumBIT { // from nyaan's library
     BIT a, b;
     RangeAddRangeSumBIT(int N) : a(N + 1), b(N + 1) {}
