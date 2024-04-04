@@ -25,12 +25,8 @@ struct Tree {
     T query(int b, int e) {
         T ra = unit, rb = unit;
         for (b += n, e += n; b < e; b /= 2, e /= 2) {
-            if (b & 1) {
-                ra = combine(ra, data[b++]);
-            }
-            if (e & 1) {
-                rb = combine(data[--e], rb);
-            }
+            if (b & 1) ra = combine(ra, data[b++]);
+            if (e & 1) rb = combine(data[--e], rb);
         }
         return combine(ra, rb);
     }

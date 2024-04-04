@@ -16,11 +16,11 @@ typedef long long ll;
         add(a, b, val) : add val to range [a, b)
         set(a, b, val) : set range [a, b) as val
     Single Operations:
-        add_val(a, val) : add val to position a
-        set_val(a, val) : set position a to val
+        add(a, val) : add val to position a
+        set(a, val) : set position a to val
     Queries:
         query(a, b) : get query of range [a, b)
-        get_val(a) : get value at position a
+        query(a) : get value at position a
         lower_bound(a, b, x) : get first idx within range [a, b) >= x or -1
     To Change:
         modify combine_data to min/max, etc
@@ -41,15 +41,77 @@ class Tree {
     }
     T combine_data_lazy(T a, L b) { return (b.isSet ? b.val : a + b.val); }
     L combine_lazy(L a, L b) { return (!b.isSet ? a.val += b.val, a : b); }
-    L scale_lazy(L a, int len) { // use len for rangesum
-        // a.val *= len;
+    L scale_lazy(L a, int len) {
+        // a.val *= len; /* for use with range sum */
         return a;
     }
-
+public:
     int n, h;
     vector<T> data;
     vector<L> lazy;
-
+    Tree(int _n) {
+        n = 1, h = 0; while (n < _n) { n <<= 1, h++; }
+        data.assign(n << 1, def), lazy.assign(n << 1, ldef);
+    }
+    /* O(n) construction */
+    Tree(const vector<T>& v) : Tree((int)v.size()) {
+        for (int i = 0; i < int(v.size()); i++) data[n + i] = v[i];
+        for (int i = n - 1; i; i--) data[i] = combine_data(data[i << 1], data[i << 1 | 1]);
+    }
+    /* add [a, B) */
+    void add(int a, int b, T val) { update(a, b, { false, val }); }
+    /* set [a, b) */
+    void set(int a, int b, T val) { update(a, b, { true, val }); }
+    /* add to pos a */
+    void add(int a, T x) {
+        push(a += n);
+        data[a] += x;
+        lazy[a] = ldef;
+        recalc(a);
+    }
+    /* set pos a */
+    void set(int a, T x) {
+        push(a += n);
+        data[a] = x;
+        lazy[a] = ldef;
+        recalc(a);
+    }
+    /* query pos a */
+    T query(int a) {
+        push(a += n);
+        return reflect(a, 1);
+    }
+    /* query [a, b) */
+    T query(int a, int b) {
+        if (a >= b) return def;
+        push(a += n), push(b += n - 1);
+        T vl = def, vr = def;
+        for (int l = a, r = b + 1, len = 1; l < r; l >>= 1, r >>= 1, len <<= 1) {
+            if (l & 1) vl = combine_data(vl, reflect(l++, len));
+            if (r & 1) vr = combine_data(reflect(--r, len), vr);
+        }
+        return combine_data(vl, vr);
+    }
+    /* default: find leftmost index >= x */
+    int lower_bound(int a, int b, T x) { return lower_bound(a, b, x, 1, 0, n); }
+    /* prints all ranges */
+    void debug() {
+        auto interval = [&](int i, auto&& interval) -> pair<int, int> {
+            if (i >= n) return { i - n, i - n + 1 };
+            pair<int, int> l = interval(i * 2, interval);
+            pair<int, int> r = interval(i * 2 + 1, interval);
+            if (l.second != r.first) return { -1, -1 };
+            return { l.first, r.second };
+            };
+        for (int i = 1; i < 2 * n; i++) {
+            auto res = interval(i, interval);
+            cout << i << ": [" << res.first << ", " << res.second << ") " << data[i];
+            if (i < n) cout << " {" << lazy[i].isSet << " " << lazy[i].val << "}";
+            cout << '\n';
+        }
+        cout << endl;
+    }
+private:
     inline T reflect(int k, int len) {
         if (lazy[k] == ldef) return data[k];
         return combine_data_lazy(data[k], scale_lazy(lazy[k], len));
@@ -92,69 +154,6 @@ class Tree {
         } else {
             return lower_bound(a, b, x, k << 1 | 1, (l + r) / 2, r);
         }
-    }
-public:
-    Tree(int _n) {
-        n = 1, h = 0; while (n < _n) { n <<= 1, h++; }
-        data.assign(n << 1, def), lazy.assign(n << 1, ldef);
-    }
-    /* O(n) construction */
-    Tree(const vector<T>& v) : Tree((int)v.size()) {
-        for (int i = 0; i < int(v.size()); i++) data[n + i] = v[i];
-        for (int i = n - 1; i; i--) data[i] = combine_data(data[i << 1], data[i << 1 | 1]);
-    }
-    /* add [a, B) */
-    void add(int a, int b, T val) { update(a, b, { false, val }); }
-    /* set [a, b) */
-    void set(int a, int b, T val) { update(a, b, { true, val }); }
-    /* query [a, b) */
-    T query(int a, int b) {
-        if (a >= b) return def;
-        push(a += n), push(b += n - 1);
-        T vl = def, vr = def;
-        for (int l = a, r = b + 1, len = 1; l < r; l >>= 1, r >>= 1, len <<= 1) {
-            if (l & 1) vl = combine_data(vl, reflect(l++, len));
-            if (r & 1) vr = combine_data(reflect(--r, len), vr);
-        }
-        return combine_data(vl, vr);
-    }
-    /* set pos a */
-    void set_val(int a, T x) {
-        push(a += n);
-        data[a] = x;
-        lazy[a] = ldef;
-        recalc(a);
-    }
-    /* add to pos a */
-    void add_val(int a, T x) {
-        push(a += n);
-        data[a] += x;
-        lazy[a] = ldef;
-        recalc(a);
-    }
-    /* query pos a */
-    T get_val(int a) {
-        push(a += n);
-        return reflect(a, 1);
-    }
-    /* default: find leftmost index >= x */
-    int lower_bound(int a, int b, T x) { return lower_bound(a, b, x, 1, 0, n); }
-    /* prints all ranges */
-    void debug() {
-        auto interval = [&](int i, auto&& interval) -> pair<int, int> {
-            if (i >= n) return { i - n, i - n + 1 };
-            pair<int, int> l = interval(i * 2, interval);
-            pair<int, int> r = interval(i * 2 + 1, interval);
-            if (l.second != r.first) return { -1, -1 };
-            return { l.first, r.second };
-            };
-        for (int i = 1; i < 2 * n; i++) {
-            auto res = interval(i, interval);
-            cout << i << ": [" << res.first << ", " << res.second << ") " << data[i];
-            if (i < n) cout << " {" << lazy[i].isSet << " " << lazy[i].val << "}";
-            cout << '\n';
-        }
-        cout << endl;
     }
 };
 

@@ -2,6 +2,7 @@
 typedef long long ll;
 using namespace std;
 
+// https://cp-algorithms.com/data_structures/fenwick.html#finding-sum-in-two-dimensional-array
 struct BIT { // fenwicktree2d
     vector<vector<ll>> bit;
     int n, m;
