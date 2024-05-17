@@ -3,8 +3,12 @@ using namespace std;
 typedef long long ll;
 
 /*
-    Binary Searchable Iterative Lazy Segment Tree:
+    Iterative Lazy Segment Tree:
     Lazy Add or Lazy Set, Range max or Range min
+    Usage:
+        modify combine functions
+        update( [a, b) x )
+        query( [a, b) )
 */
 struct Tree {
     typedef ll T, L;

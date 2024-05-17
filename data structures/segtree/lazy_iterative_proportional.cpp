@@ -102,7 +102,7 @@ public:
             pair<int, int> r = interval(i * 2 + 1, interval);
             if (l.second != r.first) return { -1, -1 };
             return { l.first, r.second };
-            };
+        };
         for (int i = 1; i < 2 * n; i++) {
             auto res = interval(i, interval);
             cout << i << ": [" << res.first << ", " << res.second << ") " << data[i];

@@ -194,7 +194,7 @@
         "prefix": "random",
         "body": [
             "#define uid(a, b) uniform_int_distribution<int>(a, b)(rng) // [a, b]",
-            "mt19937_64 rng((uint32_t)chrono::steady_clock::now().time_since_epoch().count());"
+            "mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());"
         ],
         "description": "random"
     },
@@ -206,34 +206,70 @@
         ],
         "description": "output bool"
     },
+    // "modular int": {
+    //     "prefix": "mint",
+    //     "body": [
+    //         "struct mint {",
+    //         "    typedef uint64_t T; // data type must fit MOD^2",
+    //         "    T val;",
+    //         "    mint() : val(0) {}",
+    //         "    mint(T v) : val(v% MOD) { if (val < 0) val += MOD; }",
+    //         "    mint(T a, T b) : val(0) { *this += a; *this /= b; } // a * b^-1",
+    //         "    mint& operator+=(mint const& b) { val += b.val; if (val >= MOD) val -= MOD; return *this; }",
+    //         "    mint& operator-=(mint const& b) { val -= b.val; if (val < 0) val += MOD; return *this; }",
+    //         "    mint& operator*=(mint const& b) { val = val * b.val % MOD; return *this; }",
+    //         "    friend mint mexp(mint a, ll e) { // binary exponentiation",
+    //         "        mint res = 1; while (e) { if (e & 1) res *= a; a *= a; e >>= 1; }",
+    //         "        return res;",
+    //         "    }",
+    //         "    friend mint inverse(mint a) { return mexp(a, MOD - 2); } // assumes MOD is prime",
+    //         "    mint& operator/=(mint const& b) { return *this *= inverse(b); }",
+    //         "    friend mint operator+(mint a, mint const b) { return a += b; }",
+    //         "    friend mint operator-(mint a, mint const b) { return a -= b; }",
+    //         "    friend mint operator-(mint const a) { return 0 - a; }",
+    //         "    friend mint operator*(mint a, mint const b) { return a *= b; }",
+    //         "    friend mint operator/(mint a, mint const b) { return a /= b; }",
+    //         "    friend ostream& operator<<(ostream& os, mint const& a) { return os << (uint64_t)a.val; }",
+    //         "    friend bool operator==(mint const& a, mint const& b) { return a.val == b.val; }",
+    //         "    friend bool operator!=(mint const& a, mint const& b) { return a.val != b.val; }",
+    //         "};"
+    //     ],
+    //     "description": "modular int"
+    // },
     "modular int": {
-        "prefix": "modular int",
+        "prefix": [
+            "modint",
+            "modular int"
+        ],
         "body": [
-            "struct mint {",
-            "    long long val = 0;",
+            "const int MOD = 1000000007;",
+            "struct mint { // modular int: assumes initial input fits int64",
+            "    uint64_t val;",
             "    mint() : val(0) {}",
-            "    mint(long long v) : val(v% MOD) { if (val < 0) val += MOD; }",
-            "    mint(long long a, long long b) : val(0) { *this += a; *this /= b; } // a * b^-1",
+            "    mint(ll v) : val((v + MOD) % MOD) {}",
+            "    mint(ll a, ll b) : val(a) { *this /= mint(b); } // a * b^-1",
             "    mint& operator+=(mint const& b) { val += b.val; if (val >= MOD) val -= MOD; return *this; }",
-            "    mint& operator-=(mint const& b) { val -= b.val; if (val < 0) val += MOD; return *this; }",
-            "    mint& operator*=(mint const& b) { val = val * b.val % MOD; return *this; }",
-            "    friend mint mexp(mint a, ll e) {",
-            "        mint res = 1; while (e) { if (e & 1) res *= a; a *= a; e >>= 1; }",
-            "        return res;",
+            "    mint& operator-=(mint const& b) { val += MOD - b.val; return *this; }",
+            "    mint& operator*=(mint const& b) { // kactl modmul",
+            "        int64_t res = this->val * b.val - MOD * uint64_t(1.L / MOD * this->val * b.val);",
+            "        val = res + MOD * (res < 0) - MOD * (res >= (int64_t)MOD); return *this;",
+            "    }",
+            "    friend mint mexp(mint b, ll e) { // kactl modpow binary exponentiation",
+            "        mint res(1); for (; e; b *= b, e /= 2) if (e & 1) res *= b; return res;",
             "    }",
             "    friend mint inverse(mint a) { return mexp(a, MOD - 2); } // assumes MOD is prime",
             "    mint& operator/=(mint const& b) { return *this *= inverse(b); }",
             "    friend mint operator+(mint a, mint const b) { return a += b; }",
             "    friend mint operator-(mint a, mint const b) { return a -= b; }",
-            "    friend mint operator-(mint const a) { return 0 - a; }",
+            "    friend mint operator-(mint const a) { return 0LL - a; }",
             "    friend mint operator*(mint a, mint const b) { return a *= b; }",
             "    friend mint operator/(mint a, mint const b) { return a /= b; }",
-            "    friend std::ostream& operator<<(std::ostream& os, mint const& a) { return os << a.val; }",
+            "    friend ostream& operator<<(ostream& os, mint const& a) { return os << a.val; }",
             "    friend bool operator==(mint const& a, mint const& b) { return a.val == b.val; }",
             "    friend bool operator!=(mint const& a, mint const& b) { return a.val != b.val; }",
             "};"
         ],
-        "description": "modular int"
+        "description": "modint"
     },
     "sieve of eratosthenes prime": {
         "prefix": "sieve",
@@ -471,51 +507,75 @@
         ],
         "description": "a^b % MOD, karatsuba multiplication"
     },
+    "Combinatorics2": {
+        "prefix": [
+            "choose2"
+        ],
+        "body": [
+            "const int MAXN = int(2e6) + 5;",
+            "vector<ll> fact;",
+            "void initFact(int n = MAXN, int p = MOD) { // run in main",
+            "    fact.assign(n + 1, 1);",
+            "    for (int i = 2; i <= n; i++) fact[i] = (fact[i - 1] * i) % p;",
+            "}",
+            "ll powmod(ll a, ll b, ll p = MOD) {",
+            "    a %= p;",
+            "    if (a == 0) return 0;",
+            "    ll res = 1;",
+            "    while (b > 0) {",
+            "        if (b & 1) res = (res * a) % p;",
+            "        a = (a * a) % p;",
+            "        b >>= 1;",
+            "    }",
+            "    return res;",
+            "}",
+            "ll inv(ll a, ll p = MOD) { return powmod(a, p - 2, p); }",
+            "ll ncr(ll n, ll k, ll p = MOD) {",
+            "    if (n < k || k < 0) return 0;",
+            "    return ((fact[n] * inv(fact[k], p) % p) * inv(fact[n - k], p)) % p;",
+            "}",
+            "ll stars_bars(ll n, ll k) { return (n == 0 ? 1ll : ncr(n + k - 1, n)); }"
+        ],
+        "description": "Combinatorics"
+    },
     // "Combinatorics": {
-    //     "prefix": ["choose"],
+    //     "prefix": "choose",
     //     "body": [
-    //         "const int MAXN = int(2e6) + 5;",
-    //         "vector<ll> fact;",
-    //         "void initFact(int n = MAXN, int p = MOD) { // run in main",
-    //         "    fact.assign(n + 1, 1);",
-    //         "    for (int i = 2; i <= n; i++) fact[i] = (fact[i - 1] * i) % p;",
+    //         "$0const int MAXN = int(4e6) + 5;",
+    //         "vector<mint> fact;",
+    //         "void initFact() {",
+    //         "    fact.assign(MAXN, mint(1));",
+    //         "    for(int i = 2; i < MAXN; i++) fact[i] = fact[i - 1] * i;",
     //         "}",
-    //         "ll powmod(ll a, ll b, ll p = MOD) {",
-    //         "    a %= p;",
-    //         "    if (a == 0) return 0;",
-    //         "    ll res = 1;",
-    //         "    while (b > 0) {",
-    //         "        if (b & 1) res = (res * a) % p;",
-    //         "        a = (a * a) % p;",
-    //         "        b >>= 1;",
-    //         "    }",
-    //         "    return res;",
+    //         "mint ncr(ll n, ll k) {",
+    //         "    if (n < k || k < 0) return mint{};",
+    //         "    return fact[n] * inverse(fact[k]) * inverse(fact[n - k]);",
     //         "}",
-    //         "ll inv(ll a, ll p = MOD) { return powmod(a, p - 2, p); }",
-    //         "ll ncr(ll n, ll k, ll p = MOD) {",
-    //         "    if (n < k || k < 0) return 0;",
-    //         "    return ((fact[n] * inv(fact[k], p) % p) * inv(fact[n - k], p)) % p;",
-    //         "}",
-    //         "ll stars_bars(ll n, ll k) { return (n == 0 ? 1ll : ncr(n + k - 1, n)); }"
+    //         "mint stars_bars(ll n, ll k) { return (n == 0 ? mint(1) : ncr(n + k - 1, n)); }"
     //     ],
     //     "description": "Combinatorics"
     // },
-    "Combinatorics": {
-        "prefix": "choose",
+    "combinatorics": {
+        "prefix": [
+            "choose",
+            "combo"
+        ],
         "body": [
-            "$0const int MAXN = int(4e6) + 5;",
-            "vector<mint> fact;",
+            "$1const int MAXN = int(4e6) + 5;",
+            "vector<mint> fact, invfact;",
             "void initFact() {",
-            "    fact.assign(MAXN, mint(1));",
-            "    for(int i = 2; i < MAXN; i++) fact[i] = fact[i - 1] * i;",
+            "    fact.assign(MAXN, mint(1)), invfact.assign(MAXN, mint(1));",
+            "    for (int i = 2; i < MAXN; i++) fact[i] = fact[i - 1] * i;",
+            "    invfact[MAXN - 1] = inverse(fact[MAXN - 1]);",
+            "    for (int i = MAXN - 2; i >= 0; i--) invfact[i] = invfact[i + 1] * (i + 1);",
             "}",
             "mint ncr(ll n, ll k) {",
             "    if (n < k || k < 0) return mint{};",
-            "    return fact[n] * inverse(fact[k]) * inverse(fact[n - k]);",
+            "    return fact[n] * invfact[k] * invfact[n - k];",
             "}",
             "mint stars_bars(ll n, ll k) { return (n == 0 ? mint(1) : ncr(n + k - 1, n)); }"
         ],
-        "description": "Combinatorics"
+        "description": "combinatorics"
     },
     "Union Find": {
         "prefix": [

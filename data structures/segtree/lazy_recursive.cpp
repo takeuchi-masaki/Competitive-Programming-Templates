@@ -40,14 +40,12 @@ struct Tree {
     int n;
     vector<T> data;
     vector<L> lazy;
-    void init(int n_) {
+    Tree(int n_) {
         n = 1; while (n < n_) n *= 2;
         data.assign(n * 2, def);
         lazy.assign(n * 2, ldef);
     }
-    Tree(int n_) { init(n_); }
-    Tree(vector<T>& v) {
-        init((int)v.size());
+    Tree(vector<T>& v) : Tree(int(v.size())) {
         for (int i = 0; i < (int)v.size(); i++) data[i + n] = v[i];
         for (int k = n - 1; k > 0; k--) data[k] = combine_data(data[2 * k], data[2 * k + 1]);
     }

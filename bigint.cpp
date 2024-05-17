@@ -2,8 +2,9 @@
 using namespace std;
 typedef long long ll;
 
+/* source: idk, copied from sunho */
 const int BASE_DIGITS = 18;
-const ll BASE = 1e18;
+const ll BASE = ll(1e18);
 template<typename T>
 struct myvector {
     T storage;
