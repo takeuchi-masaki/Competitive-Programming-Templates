@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <debugoutput.h>
 typedef long long ll;
 using namespace std;
 
@@ -6,7 +7,7 @@ using namespace std;
 struct MergeSortTree {
     int n;
     vector<vector<int>> tree;
-    MergeSortTree(const vector<int>& A) : n(A.size()), tree(2 * n) {
+    MergeSortTree(const vector<int>& A) : n(int(A.size())), tree(2 * n) {
         for (int i = 0; i < n; i++) {
             tree[i + n].push_back(A[i]);
         }
@@ -23,5 +24,21 @@ struct MergeSortTree {
             if (~r & 1) ret += tree[r].end() - upper_bound(begin(tree[r]), end(tree[r]), k), r--;
         }
         return ret;
+    }
+    /* prints all ranges */
+    void debug() {
+        auto interval = [&](int i, auto&& interval) -> pair<int, int> {
+            if (i >= n) return { i - n, i - n + 1 };
+            pair<int, int> l = interval(i * 2, interval);
+            pair<int, int> r = interval(i * 2 + 1, interval);
+            if (l.second != r.first) return { -1, -1 };
+            return { l.first, r.second };
+        };
+        for (int i = 1; i < 2 * n; i++) {
+            auto res = interval(i, interval);
+            cout << i << ": [" << res.first << ", " << res.second << ") ";
+            dbg(tree[i]);
+        }
+        cout << endl;
     }
 };
