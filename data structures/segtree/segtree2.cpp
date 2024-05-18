@@ -16,8 +16,8 @@ struct Tree {
         data.assign(n * 2, unit);
     }
     /* O(n) construction */
-    Tree(vector<T>& v) : Tree((int)v.size()) {
-        for (int i = 0; i < n; i++) data[i + n] = v[i];
+    Tree(vector<T>& v) : Tree(int(v.size())) {
+        for (int i = 0; i < int(v.size()); i++) data[i + n] = v[i];
         for (int i = n - 1; i > 0; i--) data[i] = combine(data[i << 1], data[i << 1 | 1]);
     }
     /*  add: data[pos += n] += val
@@ -62,7 +62,7 @@ struct Tree {
             pair<int, int> r = interval(i * 2 + 1, interval);
             if (l.second != r.first) return { -1, -1 };
             return { l.first, r.second };
-            };
+        };
         for (int i = 1; i < 2 * n; i++) {
             auto res = interval(i, interval);
             cout << i << ": [" << res.first << ", " << res.second << ") " << data[i];
