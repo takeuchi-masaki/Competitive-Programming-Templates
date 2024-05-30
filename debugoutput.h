@@ -1,101 +1,32 @@
-// based off of tourist debug
-
-#pragma once
-
-template <typename A, typename B>
-string to_string(pair<A, B> p);
-
-template <typename A, typename B, typename C>
-string to_string(tuple<A, B, C> p);
-
-template <typename A, typename B, typename C, typename D>
-string to_string(tuple<A, B, C, D> p);
-
-string to_string(const string& s) {
-    return '"' + s + '"';
-}
-
-string to_string(const char* s) {
-    return to_string((string)s);
-}
-
-string to_string(bool b) {
-    return (b ? "true" : "false");
-}
-
-string to_string(vector<bool> v) {
-    bool first = true;
-    string res = "{";
-    for (int i = 0; i < static_cast<int>(v.size()); i++) {
-        if (!first) {
-            res += ", ";
-        }
-        first = false;
-        res += to_string(v[i]);
-    }
-    res += "}";
-    return res;
-}
-
-template <size_t N>
-string to_string(bitset<N> v) {
-    string res = "";
-    for (size_t i = 0; i < N; i++) {
-        res += static_cast<char>('0' + v[i]);
-    }
-    return res;
-}
-
-template <typename A>
-string to_string(A v) {
-    bool first = true;
-    string res = "{";
-    for (const auto& x : v) {
-        if (!first) {
-            res += ", ";
-        }
-        first = false;
-        res += to_string(x);
-    }
-    res += "}";
-    return res;
-}
-
-template <typename A, typename B>
-string to_string(pair<A, B> p) {
-    return "(" + to_string(p.first) + ", " + to_string(p.second) + ")";
-}
-
-template <typename A, typename B, typename C>
-string to_string(tuple<A, B, C> p) {
-    return "(" + to_string(get<0>(p)) + ", " + to_string(get<1>(p)) + ", " + to_string(get<2>(p)) + ")";
-}
-
-template <typename A, typename B, typename C, typename D>
-string to_string(tuple<A, B, C, D> p) {
-    return "(" + to_string(get<0>(p)) + ", " + to_string(get<1>(p)) + ", " + to_string(get<2>(p)) + ", " + to_string(get<3>(p)) + ")";
-}
-
-template<typename A, typename B>
-ostream& operator<<(ostream& os, const pair<A, B>& p) {
-    return os << '(' << p.first << ", " << p.second << ')';
-}
-
-template<typename T_container,
-    typename T = typename enable_if<!is_same<T_container, string>::value,
-    typename T_container::value_type>::type>
-ostream& operator<<(ostream& os, const T_container& v) {
-    os << '{';
-    string sep;
-    for (const T& x : v) os << sep << x, sep = ", "; return os << '}';
-}
-
-void dbg_out() {}
-
-template <typename Head, typename... Tail>
-void dbg_out(Head H, Tail... T) {
-    cout << to_string(H) << " ";
-    dbg_out(T...);
-}
-
-#define dbg(...) dbg_out(__VA_ARGS__), cout << "(" << #__VA_ARGS__ << ") [" << __LINE__ << "]" << endl;
+// put after #include<bits/stdc++.h>, using namespace std
+// based off of tatyam's template: https://codeforces.com/profile/tatyam
+void _print() { putchar(' '); }
+void _print(bool a) { printf("%d", a); }
+void _print(int a) { printf("%d", a); }
+void _print(unsigned a) { printf("%u", a); }
+void _print(long a) { printf("%ld", a); }
+void _print(long long a) { printf("%lld", a); }
+void _print(unsigned long long a) { printf("%llu", a); }
+void _print(char a) { printf("%c", a); }
+void _print(char a[]) { printf("%s", a); }
+void _print(const char a[]) { printf("%s", a); }
+void _print(float a) { printf("%.15f", a); }
+void _print(double a) { printf("%.15f", a); }
+void _print(long double a) { printf("%.15Lf", a); }
+void _print(const string& a) { for (auto&& i : a) _print(i); }
+template<class...Ts> void _print(const tuple<Ts...>& tup) { apply([](auto head, auto... args) { ((_print(head), _print(", "), _print(args)), ...); }, tup); }
+template<class T> void _print(const complex<T>& a) { if (a.real() >= 0) _print('+'); _print(a.real()); if (a.imag() >= 0) _print('+'); _print(a.imag()); _print('i'); }
+template<class T> void _print(const vector<T>&);
+template<class T, size_t size> void _print(const array<T, size>&);
+template<class T, class L> void _print(const pair<T, L>& p);
+template<class T, size_t size> void _print(const T(&)[size]);
+template<class T> void _print(const vector<T>& a) { if (a.empty()) return; _print(a[0]); for (auto i = a.begin(); ++i != a.end(); ) { printf(", "); _print(*i); } }
+template<class T> void _print(const deque<T>& a) { if (a.empty()) return; _print(a[0]); for (auto i = a.begin(); ++i != a.end(); ) { printf(", "); _print(*i); } }
+template<class T, size_t size> void _print(const array<T, size>& a) { _print(a[0]); for (auto i = a.begin(); ++i != a.end(); ) { printf(", "); _print(*i); } }
+template<class T, class L> void _print(const pair<T, L>& p) { _print(p.first); printf(", "); _print(p.second); }
+template<class T, size_t size> void _print(const T(&a)[size]) { _print(a[0]); for (auto i = a; ++i != end(a); ) { printf(", "); _print(*i); } }
+template<class T> void _print(const T& a) { cout << a; }
+void out() {}
+template<class T> void out(const T& t) { _print(t); }
+template<class Head, class... Tail> void out(const Head& head, const Tail&... tail) { _print(head); printf(", "); out(tail...); }
+#define dbg(...) _print("{"), out(__VA_ARGS__), cout << "}(" << #__VA_ARGS__ << ")[" << __LINE__ << "]" << endl;
