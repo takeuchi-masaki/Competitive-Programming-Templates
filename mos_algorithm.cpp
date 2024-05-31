@@ -11,7 +11,7 @@ bool chmax(auto& a, const auto& b) { return a < b ? a = b, 1 : 0; }
 // https://cp-algorithms.com/data_structures/sqrt_decomposition.html#mos-algorithm
 // https://codeforces.com/contest/840/problem/D
 #define uid(a, b) uniform_int_distribution<int>(a, b)(rng) // [a, b]
-mt19937 rng(time(nullptr));
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
 const int MX_VAL = int(3e5) + 10;
 int cnt[MX_VAL];

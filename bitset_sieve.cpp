@@ -2,7 +2,7 @@
 using namespace std;
 
 /**
- * linear sieve:
+ * bitset linear sieve:
  * source: https://github.com/mzhang2021/cp-library/blob/master/implementations/math/LinearSieve.h
 */
 const int MAX = int(4e6);
