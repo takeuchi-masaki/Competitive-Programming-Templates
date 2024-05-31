@@ -1,8 +1,11 @@
 #include <bits/stdc++.h>
 using namespace std;
+typedef long long ll;
 
-mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
-uint64_t base = uniform_int_distribution<uint64_t>(331, uint64_t(1e18))(rng) | 1;
+/*
+modular int Mersenne Prime 2^61 - 1
+for use with Rabin-Karp String Hashing
+*/
 typedef struct mint61 {
     static constexpr uint64_t MOD = (1LL << 61) - 1;
     uint64_t val;
@@ -32,33 +35,7 @@ typedef struct mint61 {
     friend inline bool operator!=(mint61 const& a, mint61 const& b) { return a.val != b.val; }
 } mint;
 
-
 int main() {
-    // string s, t;
-    // cin >> s >> t;
-    string s = "abbabb", t = "abb";
 
-    auto compute_hash = [](const string& s, int length) -> mint {
-        mint hash{};
-        for (int i = 0; i < length; i++) {
-            hash = hash * base + s[i];
-        }
-        return hash;
-    };
-    mint maxpow = mexp(mint(base), int(t.size()));
-    auto roll_hash = [maxpow](mint& hash, int nxtidx, const string& s, int length) -> mint& {
-        return hash = hash * base + s[nxtidx] - maxpow * s[nxtidx - length];
-    };
 
-    cout << s << "\t" << t << "\n";
-    mint pattern_hash = compute_hash(t, int(t.size()));
-    mint hash = compute_hash(s, int(t.size()));
-    int duplicate_substring_cnt = (pattern_hash == hash);
-    cout << hash << "\t" << pattern_hash << "\n";
-    for (int i = int(t.size()); i < int(s.size()); i++) {
-        hash = roll_hash(hash, i, s, int(t.size()));
-        duplicate_substring_cnt += (pattern_hash == hash);
-        cout << hash << "\t" << pattern_hash << "\n";
-    }
-    cout << "duplicate substring count: " << duplicate_substring_cnt << "\n";
 }
