@@ -39,10 +39,11 @@ template<class T> void out(const T& t) { _print(t); }
 template<class Head, class... Tail> void out(const Head& head, const Tail&... tail) { _print(head); printf("}, {"); out(tail...); }
 
 #define dbg(...) _print("[{"), out(__VA_ARGS__), cout << "}](" << #__VA_ARGS__ << ")[" << __LINE__ << "]" << endl;
-#define ASSERT(condition, message)\
+#define ass(condition, message)\
    (!(condition)) ?\
       (std::cerr << "Assertion failed: (" << #condition << "), "\
       << "function " << __FUNCTION__\
       << ", file " << __FILE__\
       << ", line " << __LINE__ << "."\
       << std::endl << message << std::endl, abort(), 0) : 1
+#define ass(condition) assert(condition)

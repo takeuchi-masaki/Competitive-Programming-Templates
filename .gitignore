@@ -33,3 +33,4 @@
 
 test.cpp
 .vscode/settings.json
+.DS_Store
