@@ -27,7 +27,7 @@ typedef struct mint64 {
     friend constexpr mint64 operator-(mint64 const a) { return 0 - a; }
     friend constexpr mint64 operator*(mint64 a, mint64 const b) { return a *= b; }
     friend constexpr mint64 operator/(mint64 a, mint64 const b) { return a /= b; }
-    friend constexpr istream& operator>>(istream& is, mint64& a) { int64_t in; is >> in; a = mint64(in); return is; }
+    friend constexpr istream& operator>>(istream& is, mint64& a) { int64_t in; is >> in; a = in; return is; }
     friend constexpr ostream& operator<<(ostream& os, mint64 const& a) { return os << a.val; }
     friend constexpr bool operator==(mint64 const& a, mint64 const& b) { return a.val == b.val; }
     friend constexpr bool operator!=(mint64 const& a, mint64 const& b) { return a.val != b.val; }

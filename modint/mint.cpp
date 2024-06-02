@@ -19,7 +19,7 @@ typedef struct mint32 {
     friend constexpr mint32 operator-(mint32 const a) { return 0 - a; }
     friend constexpr mint32 operator*(mint32 a, mint32 const b) { return a *= b; }
     friend constexpr mint32 operator/(mint32 a, mint32 const b) { return a /= b; }
-    friend constexpr istream& operator>>(istream& is, mint32& a) { int64_t in; is >> in; a = mint32(in); return is; }
+    friend constexpr istream& operator>>(istream& is, mint32& a) { int64_t in; is >> in; a = in; return is; }
     friend constexpr ostream& operator<<(ostream& os, mint32 const& a) { return os << a.val; }
     friend constexpr bool operator==(mint32 const& a, mint32 const& b) { return a.val == b.val; }
     friend constexpr bool operator!=(mint32 const& a, mint32 const& b) { return a.val != b.val; }

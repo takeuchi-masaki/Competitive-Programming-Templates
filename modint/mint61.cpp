@@ -29,7 +29,7 @@ typedef struct mint61 {
     friend constexpr mint61 operator-(mint61 const a) { return 0 - a; }
     friend constexpr mint61 operator*(mint61 a, mint61 const b) { return a *= b; }
     friend constexpr mint61 operator/(mint61 a, mint61 const b) { return a /= b; }
-    friend constexpr istream& operator>>(istream& is, mint61& a) { int64_t in; is >> in; a = mint61(in); return is; }
+    friend constexpr istream& operator>>(istream& is, mint61& a) { int64_t in; is >> in; a = in; return is; }
     friend constexpr ostream& operator<<(ostream& os, mint61 const& a) { return os << a.val; }
     friend constexpr bool operator==(mint61 const& a, mint61 const& b) { return a.val == b.val; }
     friend constexpr bool operator!=(mint61 const& a, mint61 const& b) { return a.val != b.val; }
