@@ -14,8 +14,16 @@ void _print(float a) { printf("%.15f", a); }
 void _print(double a) { printf("%.15f", a); }
 void _print(long double a) { printf("%.15Lf", a); }
 void _print(const string& a) { for (auto&& i : a) _print(i); }
-template<class...Ts> void _print(const tuple<Ts...>& tup) { apply([](auto head, auto... args) { ((_print(head), _print(", "), _print(args)), ...); }, tup); }
-template<class T> void _print(const complex<T>& a) { if (a.real() >= 0) _print('+'); _print(a.real()); if (a.imag() >= 0) _print('+'); _print(a.imag()); _print('i'); }
+template<class...Ts> void _print(const tuple<Ts...>& tup) {
+    apply(
+        [](auto& head, auto&... args) {
+        ((_print(head), _print(", "), _print(args)), ...);
+    }, tup);
+}
+template<class T> void _print(const complex<T>& a) {
+    if (a.real() >= 0) _print('+'); _print(a.real());
+    if (a.imag() >= 0) _print('+'); _print(a.imag()); _print('i');
+}
 template<class T> void _print(const vector<T>&);
 template<class T, size_t size> void _print(const array<T, size>&);
 template<class T, class L> void _print(const pair<T, L>& p);
@@ -28,5 +36,13 @@ template<class T, size_t size> void _print(const T(&a)[size]) { _print(a[0]); fo
 template<class T> void _print(const T& a) { cout << a; }
 void out() {}
 template<class T> void out(const T& t) { _print(t); }
-template<class Head, class... Tail> void out(const Head& head, const Tail&... tail) { _print(head); printf(", "); out(tail...); }
-#define dbg(...) _print("{"), out(__VA_ARGS__), cout << "}(" << #__VA_ARGS__ << ")[" << __LINE__ << "]" << endl;
+template<class Head, class... Tail> void out(const Head& head, const Tail&... tail) { _print(head); printf("}, {"); out(tail...); }
+
+#define dbg(...) _print("[{"), out(__VA_ARGS__), cout << "}](" << #__VA_ARGS__ << ")[" << __LINE__ << "]" << endl;
+#define ASSERT(condition, message)\
+   (!(condition)) ?\
+      (std::cerr << "Assertion failed: (" << #condition << "), "\
+      << "function " << __FUNCTION__\
+      << ", file " << __FILE__\
+      << ", line " << __LINE__ << "."\
+      << std::endl << message << std::endl, abort(), 0) : 1
