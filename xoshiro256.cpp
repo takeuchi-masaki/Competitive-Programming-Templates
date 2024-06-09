@@ -69,14 +69,15 @@ struct xoshiro256 {
 };
 
 
+#include <iostream>
 int main() {
-    xoshiro rng{};
+    xoshiro256 rng{};
     int cnt[6] = {};
     for (int i = 0; i < int(1e6); i++) {
-        cnt[rng.uid(0, 5)]++;
+        cnt[rng.nextInt(0, 5)]++;
     }
 
     for (int i = 0; i < 6; i++) {
-        cout << cnt[i] << "\n";
+        std::cout << cnt[i] << "\n";
     }
 }
