@@ -56,7 +56,7 @@ struct xoshiro256 {
                 l = (uint64_t)m;
             }
         }
-        return m >> 64;
+        return uint64_t(m >> 64);
     }
     /*
         uniform int distribution
